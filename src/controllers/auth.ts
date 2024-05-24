@@ -1,8 +1,10 @@
-import {Request, Response} from 'express'
+import {NextFunction, Request, Response} from 'express'
 import { prismaClient } from '..';
 import {hashSync, compareSync} from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from '../secrets';
+import { BadRequestException } from '../exceptions/bad-requests';
+import { ErrorCodes } from '../exceptions/root';
 
 
 export const login = async (req: Request, res: Response) => {
@@ -32,7 +34,7 @@ export const login = async (req: Request, res: Response) => {
     res.json({user: userDataWithoutPassword, token});
 }
 
-export const signup = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response, next: NextFunction) => {
     const {name, email, password} = req.body;
     
 
@@ -43,7 +45,7 @@ export const signup = async (req: Request, res: Response) => {
     });
 
     if (user) {
-        throw Error("User is already registered");
+        next(new BadRequestException("User already exists!", ErrorCodes.USER_ALREADY_EXISTS))
     }
     user = await prismaClient.user.create({
         data: {
