@@ -2,9 +2,9 @@ export class HttpException extends Error {
     message: string;
     errorCode: ErrorCodes;
     statusCode: number;
-    errors: ErrorCodes;
+    errors: any;
 
-    constructor(message: string, errorCode: ErrorCodes, statusCode: number, errors: any) {
+    constructor(message: string, errorCode: number, statusCode: number, errors: any) {
         super(message);
         this.message = message;
         this.errorCode = errorCode;
@@ -18,6 +18,7 @@ export enum ErrorCodes {
     USER_NOT_FOUND = 1001,
     USER_ALREADY_EXISTS = 1002,
     INVALID_CREDENTIALS = 1003,
-    INTERNAL_SERVER_ERROR = 1004,
-    UNPROCESSABLE_ENTITY = 1005,
+    UNPROCESSABLE_ENTITY = 2001,
+    INTERNAL_EXCEPTION = 3001,
+    USER_NOT_REGISTERED = 4001
 }

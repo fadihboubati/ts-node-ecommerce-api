@@ -5,13 +5,12 @@ import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from '../secrets';
 import { BadRequestException } from '../exceptions/bad-requests';
 import { ErrorCodes } from '../exceptions/root';
-import { unprocessableEntity } from '../exceptions/validation';
-import { UserSchema } from '../schema/users';
+import {logIn as loginAuth, signUp as signUpAuth} from '../validations/auth.validation';
 
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
     const {email, password} = req.body;
-    
+    loginAuth.parse(req.body);
 
     let user = await prismaClient.user.findFirst({
         where: {
@@ -20,12 +19,16 @@ export const login = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-        throw Error("User is not registered");
+        next(new BadRequestException("User not registered!", ErrorCodes.USER_NOT_REGISTERED));
+        return;
     }
+
+    // since we already do a strict validation, so no need for this, but will keep it for reference
     const { password: hashedUserPassword, ...userDataWithoutPassword } = user;
 
     if (!compareSync(password, hashedUserPassword)) {
-        throw Error("Invalid Credentials");
+        next(new BadRequestException("Invalid Credentials!", ErrorCodes.INVALID_CREDENTIALS));
+        return;
     }
 
     let payload = {
@@ -37,8 +40,7 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        UserSchema.parse(req.body);
+        signUpAuth.parse(req.body);
         const {name, email, password} = req.body;
         let user = await prismaClient.user.findFirst({
             where: {
@@ -56,7 +58,4 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
             }
         })
         res.json(user)
-    } catch (error : any) {
-        next(new unprocessableEntity(error?.issues, "Error creating user", ErrorCodes.UNPROCESSABLE_ENTITY))
-    }
 }
