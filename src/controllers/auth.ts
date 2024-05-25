@@ -6,6 +6,7 @@ import { JWT_SECRET } from '../secrets';
 import { BadRequestException } from '../exceptions/bad-requests';
 import { ErrorCodes } from '../exceptions/root';
 import {logIn as loginAuth, signUp as signUpAuth} from '../validations/auth.validation';
+import { notFoundException } from '../exceptions/not-found';
 
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
@@ -19,7 +20,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     });
 
     if (!user) {
-        next(new BadRequestException("User not registered!", ErrorCodes.USER_NOT_REGISTERED));
+        next(new notFoundException("User not registered!", ErrorCodes.USER_NOT_REGISTERED));
         return;
     }
 
@@ -27,7 +28,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const { password: hashedUserPassword, ...userDataWithoutPassword } = user;
 
     if (!compareSync(password, hashedUserPassword)) {
-        next(new BadRequestException("Invalid Credentials!", ErrorCodes.INVALID_CREDENTIALS));
+        next(new BadRequestException("Invalid Password!", ErrorCodes.INVALID_PASSWORD));
         return;
     }
 

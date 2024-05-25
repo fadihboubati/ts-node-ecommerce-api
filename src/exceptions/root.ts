@@ -17,7 +17,7 @@ export class HttpException extends Error {
 export enum ErrorCodes {
     USER_NOT_FOUND = 1001,
     USER_ALREADY_EXISTS = 1002,
-    INVALID_CREDENTIALS = 1003,
+    INVALID_PASSWORD = 1003,
     UNPROCESSABLE_ENTITY = 2001,
     INTERNAL_EXCEPTION = 3001,
     USER_NOT_REGISTERED = 4001
