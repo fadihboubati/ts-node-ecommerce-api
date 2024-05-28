@@ -1,3 +1,4 @@
+// import { Role } from '@prisma/client';
 import { z } from 'zod';
 
 export const logIn = z.object({
@@ -16,6 +17,8 @@ export const signUp = z.object({
         required_error: "Password is required", 
         invalid_type_error: "Password must be a string",
         message: "Password must be at least 8 characters long",
-    }).max(8)
+    }).max(8),
+    // role: z.nativeEnum(Role, {required_error: "Role is required"})
+    
 }).strict();
 

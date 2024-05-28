@@ -22,7 +22,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         // 4. to get the user from the payload
         const user = await prismaClient.user.findUnique({
             where: {
-                id: payload.userId
+                userId: payload.userId
             }
         })
     

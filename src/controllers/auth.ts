@@ -33,7 +33,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     }
 
     let payload = {
-        userId: user.id
+        userId: user.userId
     }
     const token = jwt.sign(payload, JWT_SECRET, {expiresIn: "1d"});
 

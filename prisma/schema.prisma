@@ -13,13 +13,63 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Policy {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+}
+
 model User {
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  password String
+  userId    Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  UserProduct   UserProduct[]
+
+  roleId    Int
+  role      Role?     @relation(fields: [roleId], references: [roleId])
+
   @@map("users")
+}
+
+// Define the Role table
+model Role {
+  roleId      Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+
+  policies    Policy[] // Many-to-many relationship with policies
+  users       User[]   // One-to-many relationship with users (could have many user that has the same role, like having two admins, so two users that have the role admin)
+}
+
+model Product {
+  productId   Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Decimal
+  tags        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  UserProduct UserProduct[] // Many-to-many relationship with users
+
+  quantity    Int @default(0)      // Fixed quantity for each product
+
+  @@map("products")
+}
+
+// Define the UserProduct table (join table for many-to-many User-Product relationship)
+model UserProduct {
+  userId    Int
+  productId Int
+
+  user      User     @relation(fields: [userId], references: [userId])
+  product   Product  @relation(fields: [productId], references: [productId])
+
+  @@id([userId, productId])
+  @@map("user_products")
 }
