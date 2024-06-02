@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "npx nodemon"
+    "start": "npx nodemon",
+    "seed": "node src/seed/seedRoles.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

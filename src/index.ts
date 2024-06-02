@@ -20,6 +20,13 @@ export const prismaClient = new PrismaClient({
 
 app.use(errorMiddleware);
 
-app.listen(PORT, () => {
-    console.log("server started");
+prismaClient.$connect().then(() => {
+    console.log("database connected");
+    app.listen(PORT, () => {
+        console.log("server started");
+    });
+
+}).catch(err => {
+    console.error("Failed to connect to the database", err);
+    process.exit(1); // Exit the process with an error code
 });

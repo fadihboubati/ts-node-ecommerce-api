@@ -11,3 +11,8 @@ export const createProduct = async (req: Request, res: Response) => {
     })
     res.json(product)
 }
+
+export const listAllProducts = async (req: Request, res: Response) => {    
+    const product = await prismaClient.product.findMany()
+    res.json(product)
+}

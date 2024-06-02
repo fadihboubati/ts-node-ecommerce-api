@@ -5,8 +5,9 @@ import { JWT_SECRET } from "../secrets";
 import * as jwt from "jsonwebtoken";
 import { prismaClient } from "..";
 import { InternalException } from "../exceptions/internal-exception";
+import { UserWithRole } from "../../@types/express";
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     // 1. extract token from header
     const token = req.headers.authorization?.split(" ")[1];
 
@@ -23,6 +24,14 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         const user = await prismaClient.user.findUnique({
             where: {
                 userId: payload.userId
+            },
+            include : {
+                role: {
+                    select: {
+                        name: true,
+                        policies: true
+                    }
+                }
             }
         })
     
@@ -30,8 +39,13 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
             next(new UnauthorizedException("Unauthorized", ErrorCodes.UNAUTHORIZED));
         } 
         
+        
         // 5. attach the user to the current request object    
-        req.currentUser = user as any;
+        const { password, ...userWithoutPassword } = user as UserWithRole & { password: string };
+
+
+        // 6. Attach the user without the password to the request object
+        req.currentUser = userWithoutPassword
 
         next();
     } catch (error) {

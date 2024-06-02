@@ -30,7 +30,7 @@ model User {
 
   UserProduct   UserProduct[]
 
-  roleId    Int
+  roleId    Int?
   role      Role?     @relation(fields: [roleId], references: [roleId])
 
   @@map("users")

@@ -7,6 +7,7 @@ import { BadRequestException } from '../exceptions/bad-requests';
 import { ErrorCodes } from '../exceptions/root';
 import {logIn as loginAuth, signUp as signUpAuth} from '../validations/auth.validation';
 import { notFoundException } from '../exceptions/not-found';
+import { UserWithRole } from '../../@types/express';
 
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
@@ -62,6 +63,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 export const me = (req: Request, res: Response, next: NextFunction) => {
-    const { password: hashedUserPassword, ...userDataWithoutPassword } = req.currentUser;
-    res.json(userDataWithoutPassword)
+    const user = req.currentUser;
+    const { password, ...userWithoutPassword } = user as UserWithRole & { password: string };
+    res.json(userWithoutPassword)
 }
