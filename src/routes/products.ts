@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { errorHandler } from "../middlewares/error-handlers";
-import { createProduct, listAllProducts } from "../controllers/products";
+import { createProduct, deleteProduct, getProductsByUser, listAllProducts, updateProduct } from "../controllers/products";
 import { authenticate } from "../middlewares/authenticate";
 import { authorize } from "../middlewares/authorizes";
 
@@ -16,9 +16,12 @@ if (!(process.env.NODE_ENV === 'production')) {
     authMiddlewares.push(authorize(['ADMIN'], ["READ"]));
 }
 
-productRoutes.post('/', authenticate, authorize(['ADMIN'], ["CREATE"]), errorHandler(createProduct));
+productRoutes.post('/', authenticate, authorize(['ADMIN'], ["READ"]), errorHandler(createProduct));
 productRoutes.get('/list', ...authMiddlewares, errorHandler(listAllProducts));
 
+productRoutes.get('user/:id', authenticate, authorize(['ADMIN'], ["READ"]), errorHandler(getProductsByUser));
+productRoutes.put('/:id', authenticate, authorize(['ADMIN'], ["CREATE"]), errorHandler(updateProduct));
+productRoutes.delete('/:id', authenticate, authorize(['ADMIN'], ["CREATE"]), errorHandler(deleteProduct));
 
 
 export default productRoutes;
