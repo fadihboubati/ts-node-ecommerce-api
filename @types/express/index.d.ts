@@ -17,6 +17,7 @@ declare global{
     namespace Express {
         interface Request {
             currentUser?: UserWithRole // the ? mark means optional
+            reqData: { body?: any; params?: any; query?: any; };            
         }
     }
 }

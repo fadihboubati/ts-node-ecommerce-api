@@ -13,6 +13,10 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use('/api', rootRouter);
 
+app.use('*', (req: Request, res: Response) => {
+    res.status(404).json({ message: 'Not found' });
+});
+
 export const prismaClient = new PrismaClient({
     log: ["query"]
 });
